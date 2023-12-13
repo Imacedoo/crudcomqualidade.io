@@ -52,8 +52,32 @@ async function create({
   }
 }
 
+interface TodoControllerToggleDoneParams {
+  todoId: string;
+  updateTodoOnScreen: () => void;
+  onError: () => void;
+}
+
+function toggleDone({
+  todoId,
+  updateTodoOnScreen,
+  onError,
+}: TodoControllerToggleDoneParams) {
+  // Optimistic Update
+  // updateTodoOnScreen();
+
+  // Realistic Update
+  todoRepository
+    .toggleDone(todoId)
+    .then(() => updateTodoOnScreen())
+    .catch(() => {
+      onError();
+    });
+}
+
 export const todoController = {
   get,
   filterTodosByContent,
   create,
+  toggleDone,
 };
