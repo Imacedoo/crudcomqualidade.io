@@ -1,4 +1,6 @@
 import { todoRepository } from "@ui/repository/todo";
+import { Todo } from "@ui/schema/todo";
+import { z as schema } from "zod";
 
 interface TodoControllerGetParams {
   page: number;
@@ -24,7 +26,34 @@ function filterTodosByContent<Todo>(
   return homeTodos;
 }
 
+interface TodoControllerCreateParams {
+  content?: string;
+  onError: (customMessage?: string) => void;
+  onSuccess: (todo: Todo) => void;
+}
+async function create({
+  content,
+  onError,
+  onSuccess,
+}: TodoControllerCreateParams) {
+  // Fail fast se não tiver o content
+  const parsedParams = schema.string().min(1).safeParse(content);
+  if (!parsedParams.success) {
+    onError();
+    return;
+  }
+
+  try {
+    const todo = await todoRepository.createByContent(parsedParams.data);
+
+    onSuccess(todo);
+  } catch (_) {
+    onError();
+  }
+}
+
 export const todoController = {
   get,
   filterTodosByContent,
+  create,
 };
