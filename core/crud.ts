@@ -15,7 +15,7 @@ interface Todo {
   done: boolean;
 }
 
-function create(content: string): Todo {
+export function create(content: string): Todo {
   const todo: Todo = {
     id: uuid(),
     date: new Date().toISOString(),
@@ -89,7 +89,7 @@ function deleteById(id: UUID) {
   const todos = read();
 
   const todosWithoutOne = todos.filter((todo) => {
-    if(id === todo.id) {
+    if (id === todo.id) {
       return false;
     }
     return true;
